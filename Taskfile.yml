@@ -2,7 +2,18 @@ version: "3"
 
 silent: true
 
+vars:
+  ASSETS_DIR: ./src/assets
+  ASSETS_FILE: styles.css
+
 tasks:
   dev:
+    deps: [cargo:dev, tw:watch]
+
+  cargo:dev:
     cmds:
       - RUST_LOG=info cargo watch -x run
+
+  tw:watch:
+    cmds:
+      - bunx tailwindcss -i {{.ASSETS_DIR}}/src/{{.ASSETS_FILE}} -o {{.ASSETS_DIR}}/dist/{{.ASSETS_FILE}} --watch

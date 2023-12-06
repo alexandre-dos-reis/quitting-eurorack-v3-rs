@@ -1,10 +1,15 @@
 use crate::config::env_vars::load_env_vars;
 use api::types::{ApiResponse, Module};
 use askama::Template;
-use axum::{extract::State, routing::get, Router};
+use axum::{
+    extract::State,
+    routing::{get, get_service},
+    Router,
+};
 use config::env_vars::EnvVars;
 use log::info;
 use std::sync::Arc;
+use tower_http::services::ServeDir;
 
 mod api;
 mod config;
@@ -17,7 +22,10 @@ async fn main() {
     info!("starting up");
 
     let shared_state = Arc::new(env_var.clone());
-    let app = Router::new().route("/", get(home)).with_state(shared_state);
+    let app = Router::new()
+        .route("/", get(home))
+        .nest_service("/assets", get_service(ServeDir::new("./src/assets/dist")))
+        .with_state(shared_state);
 
     let listener = tokio::net::TcpListener::bind(format!("localhost:{:?}", env_var.port))
         .await
