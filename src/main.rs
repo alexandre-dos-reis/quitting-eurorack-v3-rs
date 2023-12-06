@@ -17,9 +17,7 @@ async fn main() {
     info!("starting up");
 
     let shared_state = Arc::new(env_var.clone());
-    let app = Router::new()
-        .route("/", get(hello))
-        .with_state(shared_state);
+    let app = Router::new().route("/", get(home)).with_state(shared_state);
 
     let listener = tokio::net::TcpListener::bind(format!("localhost:{:?}", env_var.port))
         .await
@@ -30,13 +28,13 @@ async fn main() {
 }
 
 #[derive(Template)]
-#[template(path = "home.html")]
+#[template(path = "pages/home.html")]
 struct HelloTemplate<'a> {
     modules: Vec<Module>,
     title: &'a str,
 }
 
-async fn hello(State(state): State<Arc<EnvVars>>) -> HelloTemplate<'static> {
+async fn home(State(state): State<Arc<EnvVars>>) -> HelloTemplate<'static> {
     let res = reqwest::Client::new()
         .get(state.api_endpoint.clone() + "/items/module?fields=*,pictures.directus_files_id")
         .header("Authorization", state.api_key.clone())

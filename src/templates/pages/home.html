@@ -1,6 +1,8 @@
+{% extends "base.html" %} {% block content %}
 <h1>{{ title }}</h1>
 <ul>
   {% for m in modules %}
   <li>{{ m.manufacturer }}: {{ m.name }}</li>
   {% endfor %}
 </ul>
+{% endblock %}

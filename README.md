@@ -2,4 +2,4 @@
 
 ## Resources
 
-- [Askama Doc](https://djc.github.io/askama/askama.html)
+- [Askama Docs](https://djc.github.io/askama/askama.html)
