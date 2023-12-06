@@ -2,25 +2,28 @@ use dotenvy::dotenv;
 use std::{env, str::FromStr};
 use strum_macros::EnumString;
 
-#[derive(EnumString)]
+#[derive(Debug, EnumString)]
+#[strum(ascii_case_insensitive)]
 pub enum AppEnv {
-    #[strum(serialize = "Dev", ascii_case_insensitive)]
     Dev,
-
-    #[strum(serialize = "Prod", ascii_case_insensitive)]
     Prod,
+    Ci,
 }
 
 #[derive(Debug)]
 pub struct EnvVars {
     pub api_endpoint: String,
+    pub api_key: String,
     pub port: usize,
+    pub app_env: AppEnv,
 }
 
 const DEFAULT_PORT: usize = 3000;
+const API_ENDPOINT_VAR: &str = "API_ENDPOINT";
 
+// TODO: make en vars a global object: see lazy static
 pub fn load_env_vars() -> EnvVars {
-    let env =
+    let app_env =
         AppEnv::from_str(&env::var("ENV").unwrap_or(String::from("Dev"))).unwrap_or(AppEnv::Dev);
 
     let port: usize = match env::var("PORT") {
@@ -28,21 +31,32 @@ pub fn load_env_vars() -> EnvVars {
         Err(_) => DEFAULT_PORT,
     };
 
-    match env {
+    match app_env {
         AppEnv::Prod => EnvVars {
-            api_endpoint: env::var("API_ENDPOINT")
-                .expect("API_ENDPOINT need to be set in a proudction environment !"),
             port,
+            app_env,
+            api_key: env::var("API_KEY").expect("API KEY is mandatory !"),
+            api_endpoint: env::var(API_ENDPOINT_VAR)
+                .expect("API_ENDPOINT need to be set in a production environment !"),
         },
-        AppEnv::Dev => EnvVars {
-            api_endpoint: {
-                if env::var("API_ENDPOINT").is_ok() {
-                    panic!("API_ENDPOINT env variable must be provided via the .env file !")
-                }
-                dotenv().expect(".env file not found !");
-                env::var("API_ENDPOINT").expect("dotenv didn't work !")
-            },
+        AppEnv::Dev => {
+            if env::var(API_ENDPOINT_VAR).is_ok() || env::var("api_key").is_ok() {
+                panic!("Env variables must be provided via the .env file !")
+            }
+            dotenv().expect(".env file not found !");
+            EnvVars {
+                port,
+                app_env,
+                api_key: env::var("API_KEY").expect("dotenv didn't work !"),
+                api_endpoint: env::var(API_ENDPOINT_VAR).expect("dotenv didn't work !"),
+            }
+        }
+        AppEnv::Ci => EnvVars {
             port,
+            app_env,
+            api_key: env::var("API_KEY").expect("API KEY is mandatory !"),
+            api_endpoint: env::var(API_ENDPOINT_VAR)
+                .expect("API_ENDPOINT need to be set in a CI environment !"),
         },
     }
 }
