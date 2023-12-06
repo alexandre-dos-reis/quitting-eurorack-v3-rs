@@ -37,12 +37,12 @@ async fn main() {
 
 #[derive(Template)]
 #[template(path = "pages/home.html")]
-struct HelloTemplate<'a> {
+struct HelloTemplate {
     modules: Vec<Module>,
-    title: &'a str,
+    is_ok: bool,
 }
 
-async fn home(State(state): State<Arc<EnvVars>>) -> HelloTemplate<'static> {
+async fn home(State(state): State<Arc<EnvVars>>) -> HelloTemplate {
     let res = reqwest::Client::new()
         .get(state.api_endpoint.clone() + "/items/module?fields=*,pictures.directus_files_id")
         .header("Authorization", state.api_key.clone())
@@ -52,16 +52,16 @@ async fn home(State(state): State<Arc<EnvVars>>) -> HelloTemplate<'static> {
     match res {
         Err(_) => HelloTemplate {
             modules: vec![],
-            title: "An error occured, please come back later...",
+            is_ok: false,
         },
         Ok(r) => match r.json::<ApiResponse>().await {
             Err(_) => HelloTemplate {
                 modules: vec![],
-                title: "An error occured, please come back later...",
+                is_ok: false,
             },
             Ok(json) => HelloTemplate {
                 modules: json.data,
-                title: "👋 Hello, I'm quitting Eurorack. 😭",
+                is_ok: true,
             },
         },
     }

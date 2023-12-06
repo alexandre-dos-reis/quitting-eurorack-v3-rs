@@ -1,8 +1,24 @@
-{% extends "base.html" %} {% block content %}
-<h1 class="bg-blue-500">{{ title }}</h1>
-<ul>
+{% extends "base.html" %} {% block content %} {% if is_ok %}
+<h1 class="text-center text-4xl mt-5 mb-5">
+  👋 Hello, I'm quitting Eurorack. 😭
+</h1>
+<div class="text-center opacity-50 mb-5">At least, I'm reducing my rack...</div>
+<h2 class="text-center text-2xl mb-5">Here's my selling list:</h2>
+<main
+  class="grid xs:grid-cols-1 sm:grid-cols-2 md:grid-cols-1 gap-5 px-5 mb-24"
+>
   {% for m in modules %}
-  <li>{{ m.manufacturer }}: {{ m.name }}</li>
+  <Couple>
+    <Tag bgColor="bg-blue-500">Manufacturer</Tag>
+    <El>{m.manufacturer}</El>
+  </Couple>
+  <article key="{m.id}" class="border border-gray-600 p-5 rounded-lg">
+    <section class="grid grid-cols-1 md:grid-cols-7 gap-4">{{ m.name}}</section>
+  </article>
   {% endfor %}
-</ul>
-{% endblock %}
+</main>
+{% else %}
+<h1 class="text-center text-4xl mt-5 mb-5">
+  An error occurred, try again later !
+</h1>
+{% endif -%} {% endblock %}
