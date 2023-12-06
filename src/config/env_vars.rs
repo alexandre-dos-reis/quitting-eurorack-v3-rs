@@ -2,7 +2,7 @@ use dotenvy::dotenv;
 use std::{env, str::FromStr};
 use strum_macros::EnumString;
 
-#[derive(Debug, EnumString)]
+#[derive(Debug, Clone, Copy, EnumString)]
 #[strum(ascii_case_insensitive)]
 pub enum AppEnv {
     Dev,
@@ -10,7 +10,7 @@ pub enum AppEnv {
     Ci,
 }
 
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 pub struct EnvVars {
     pub api_endpoint: String,
     pub api_key: String,
