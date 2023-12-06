@@ -43,24 +43,20 @@ async fn hello(State(state): State<Arc<EnvVars>>) -> HelloTemplate<'static> {
         .send()
         .await;
 
-    if res.is_err() {
-        return HelloTemplate {
+    match res {
+        Err(_) => HelloTemplate {
             modules: vec![],
             title: "An error occured, please come back later...",
-        };
-    }
-
-    let json_res = res.unwrap().json::<Response>().await;
-
-    if json_res.is_err() {
-        return HelloTemplate {
-            modules: vec![],
-            title: "An error occured, please come back later...",
-        };
-    }
-
-    HelloTemplate {
-        modules: json_res.unwrap().data,
-        title: "👋 Hello, I'm quitting Eurorack. 😭",
+        },
+        Ok(r) => match r.json::<Response>().await {
+            Err(_) => HelloTemplate {
+                modules: vec![],
+                title: "An error occured, please come back later...",
+            },
+            Ok(json) => HelloTemplate {
+                modules: json.data,
+                title: "👋 Hello, I'm quitting Eurorack. 😭",
+            },
+        },
     }
 }
