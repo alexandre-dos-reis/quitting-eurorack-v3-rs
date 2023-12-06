@@ -17,17 +17,18 @@ mod config;
 #[tokio::main]
 async fn main() {
     env_logger::init();
-
-    let env_var = load_env_vars();
     info!("starting up");
 
-    let shared_state = Arc::new(env_var.clone());
+    let env_var = load_env_vars();
+    let port = env_var.app_port;
+    let shared_state = Arc::new(env_var);
+
     let app = Router::new()
         .route("/", get(home))
         .nest_service("/assets", get_service(ServeDir::new("./src/assets/dist")))
         .with_state(shared_state);
 
-    let listener = tokio::net::TcpListener::bind(format!("localhost:{:?}", env_var.port))
+    let listener = tokio::net::TcpListener::bind(format!("localhost:{:?}", port))
         .await
         .unwrap();
 
