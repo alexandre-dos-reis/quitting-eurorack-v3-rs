@@ -1,5 +1,5 @@
 use crate::config::env_vars::load_env_vars;
-use api::types::{Module, Response};
+use api::types::{ApiResponse, Module};
 use askama::Template;
 use axum::{extract::State, routing::get, Router};
 use config::env_vars::EnvVars;
@@ -48,7 +48,7 @@ async fn hello(State(state): State<Arc<EnvVars>>) -> HelloTemplate<'static> {
             modules: vec![],
             title: "An error occured, please come back later...",
         },
-        Ok(r) => match r.json::<Response>().await {
+        Ok(r) => match r.json::<ApiResponse>().await {
             Err(_) => HelloTemplate {
                 modules: vec![],
                 title: "An error occured, please come back later...",

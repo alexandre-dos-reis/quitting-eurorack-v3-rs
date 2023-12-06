@@ -2,7 +2,7 @@ use serde_derive::Deserialize;
 use serde_derive::Serialize;
 
 #[derive(Debug, PartialEq, Serialize, Deserialize)]
-pub struct Response {
+pub struct ApiResponse {
     pub data: Vec<Module>,
 }
 
