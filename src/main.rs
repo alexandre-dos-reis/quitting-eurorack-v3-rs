@@ -1,36 +1,15 @@
-use crate::config::env_vars::load_env_vars;
-use api::types::{ApiResponse, Module};
+use crate::{config::env_vars::load_env_vars, handlers::home::home_handler};
 use axum::routing::get_service;
-use axum::{extract::State, routing::get, Router};
-use config::env_vars::EnvVars;
+use axum::{routing::get, Router};
 use log::info;
-use maud::Markup;
-use templates::pages::error_page::error_page;
-use templates::pages::home_page::home_page;
-
-use std::sync::Arc;
-
 use std::net::{IpAddr, Ipv4Addr, SocketAddr};
+use std::sync::Arc;
 use tower_http::services::ServeDir;
+
 mod api;
 mod config;
+mod handlers;
 mod templates;
-
-async fn home_handler(State(state): State<Arc<EnvVars>>) -> Markup {
-    let res = reqwest::Client::new()
-        .get(state.api_endpoint.clone() + "/items/module?fields=*,pictures.directus_files_id")
-        .header("Authorization", state.api_key.clone())
-        .send()
-        .await;
-
-    match res {
-        Err(_) => error_page(),
-        Ok(r) => match r.json::<ApiResponse<Module>>().await {
-            Err(_) => error_page(),
-            Ok(json) => home_page(json.data),
-        },
-    }
-}
 
 #[tokio::main]
 async fn main() {
