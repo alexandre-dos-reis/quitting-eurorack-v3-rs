@@ -13,8 +13,12 @@ pub fn home_page(modules: Vec<Module>) -> Markup {
         h2 class="text-center text-2xl mb-5" {
             "Here's my selling list:"
         }
-        @for m in &modules {
-         (m.name)
-    }
+        ul {
+            @for m in &modules {
+                li {
+                    (m.manufacturer)" "(m.name)
+                }
+            }
+        }
     })
 }
