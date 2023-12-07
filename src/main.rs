@@ -1,12 +1,13 @@
 use crate::config::env_vars::load_env_vars;
-use api::types::{ApiResponse, Module};
-use askama::Template;
+use api::types::ApiResponse;
 use axum::{
     extract::State,
+    response::Html,
     routing::{get, get_service},
     Router,
 };
 use config::env_vars::EnvVars;
+use dioxus::prelude::*;
 use log::info;
 use std::sync::Arc;
 use tower_http::services::ServeDir;
@@ -36,14 +37,11 @@ async fn main() {
     axum::serve(listener, app).await.unwrap();
 }
 
-#[derive(Template)]
-#[template(path = "pages/home.html")]
-struct HelloTemplate {
-    modules: Vec<Module>,
-    is_ok: bool,
+pub fn render(f: LazyNodes<'_, '_>) -> Html<String> {
+    Html(dioxus_ssr::render_lazy(f))
 }
 
-async fn home(State(state): State<Arc<EnvVars>>) -> HelloTemplate {
+async fn home(State(state): State<Arc<EnvVars>>) -> Html<String> {
     let res = reqwest::Client::new()
         .get(state.api_endpoint.clone() + "/items/module?fields=*,pictures.directus_files_id")
         .header("Authorization", state.api_key.clone())
@@ -51,19 +49,17 @@ async fn home(State(state): State<Arc<EnvVars>>) -> HelloTemplate {
         .await;
 
     match res {
-        Err(_) => HelloTemplate {
-            modules: vec![],
-            is_ok: false,
-        },
+        Err(_) => render(rsx!( div { "not ok" })),
         Ok(r) => match r.json::<ApiResponse>().await {
-            Err(_) => HelloTemplate {
-                modules: vec![],
-                is_ok: false,
-            },
-            Ok(json) => HelloTemplate {
-                modules: json.data,
-                is_ok: true,
-            },
+            Err(_) => render(rsx!( div { "not ok" })),
+            Ok(json) => render(rsx!( div {
+                for m in json.data {
+                    div {
+                        class: "bg-red-500",
+                        {m.manufacturer}
+                    }
+                }
+            })),
         },
     }
 }
