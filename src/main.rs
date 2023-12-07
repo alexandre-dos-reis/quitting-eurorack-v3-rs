@@ -26,7 +26,7 @@ async fn main() {
     info!("starting up");
 
     let env_var = load_env_vars();
-    let port = env_var.app_port;
+    let port = env_var.port;
 
     let shared_state = Arc::new(env_var);
     let app = Router::new()
