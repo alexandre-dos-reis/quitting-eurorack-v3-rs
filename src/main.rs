@@ -4,7 +4,8 @@ use axum::{extract::State, routing::get, Router};
 use config::env_vars::EnvVars;
 use log::info;
 use maud::Markup;
-use templates::pages::home::home_page;
+use templates::pages::error_page::error_page;
+use templates::pages::home_page::home_page;
 
 use std::sync::Arc;
 
@@ -19,13 +20,15 @@ async fn home_handler(State(state): State<Arc<EnvVars>>) -> Markup {
         .get(state.api_endpoint.clone() + "/items/module?fields=*,pictures.directus_files_id")
         .header("Authorization", state.api_key.clone())
         .send()
-        .await
-        .unwrap()
-        .json::<ApiResponse>()
-        .await
-        .unwrap();
+        .await;
 
-    home_page(res.data)
+    match res {
+        Err(_) => error_page(),
+        Ok(r) => match r.json::<ApiResponse>().await {
+            Err(_) => error_page(),
+            Ok(json) => home_page(json.data),
+        },
+    }
 }
 
 #[tokio::main]

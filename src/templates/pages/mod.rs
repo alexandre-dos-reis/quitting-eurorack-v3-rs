@@ -1,1 +1,2 @@
-pub mod home;
+pub mod error_page;
+pub mod home_page;
