@@ -1,5 +1,6 @@
 use crate::config::env_vars::load_env_vars;
 use api::types::{ApiResponse, Module};
+use axum::routing::get_service;
 use axum::{extract::State, routing::get, Router};
 use config::env_vars::EnvVars;
 use log::info;
@@ -10,7 +11,7 @@ use templates::pages::home_page::home_page;
 use std::sync::Arc;
 
 use std::net::{IpAddr, Ipv4Addr, SocketAddr};
-// use tower_http::services::ServeDir;
+use tower_http::services::ServeDir;
 mod api;
 mod config;
 mod templates;
@@ -42,7 +43,7 @@ async fn main() {
 
     let router = Router::new()
         .route("/", get(home_handler))
-        // .nest_service("/assets", get_service(ServeDir::new("./src/assets/dist")))
+        .nest_service("/assets", get_service(ServeDir::new("./src/assets/dist")))
         .with_state(shared_state);
 
     let server = axum::Server::bind(&SocketAddr::new(
