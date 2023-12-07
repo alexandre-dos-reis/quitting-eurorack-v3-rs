@@ -31,6 +31,5 @@ async fn main() {
     .serve(router.into_make_service());
 
     info!("Server launch on http://localhost:{:?}", port);
-
     server.await.unwrap();
 }
