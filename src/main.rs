@@ -1,23 +1,31 @@
 use crate::config::env_vars::load_env_vars;
-use api::types::{ApiResponse, Module};
-use askama::Template;
-use axum::{
-    extract::State,
-    routing::{get, get_service},
-    Router,
-};
+use api::types::ApiResponse;
+use axum::{extract::State, routing::get, Router};
 use config::env_vars::EnvVars;
 use log::info;
-use maud::{html, Markup};
+use maud::Markup;
+use templates::pages::home::home_page;
+
 use std::sync::Arc;
-use tower_http::services::ServeDir;
+
+use std::net::{IpAddr, Ipv4Addr, SocketAddr};
+// use tower_http::services::ServeDir;
 mod api;
 mod config;
+mod templates;
 
-async fn hello_world() -> Markup {
-    html! {
-        h1 { "Hello, World!" }
-    }
+async fn home_handler(State(state): State<Arc<EnvVars>>) -> Markup {
+    let res = reqwest::Client::new()
+        .get(state.api_endpoint.clone() + "/items/module?fields=*,pictures.directus_files_id")
+        .header("Authorization", state.api_key.clone())
+        .send()
+        .await
+        .unwrap()
+        .json::<ApiResponse>()
+        .await
+        .unwrap();
+
+    home_page(res.data)
 }
 
 #[tokio::main]
@@ -27,49 +35,19 @@ async fn main() {
 
     let env_var = load_env_vars();
     let port = env_var.port;
-
     let shared_state = Arc::new(env_var);
+
     let app = Router::new()
-        .route("/", get(hello_world))
-        .nest_service("/assets", get_service(ServeDir::new("./src/assets/dist")))
+        .route("/", get(home_handler))
+        // .nest_service("/assets", get_service(ServeDir::new("./src/assets/dist")))
         .with_state(shared_state);
 
-    let listener = tokio::net::TcpListener::bind(format!("localhost:{:?}", port))
-        .await
-        .unwrap();
-
-    info!("Server launch on {:?}", listener.local_addr().unwrap());
-    axum::serve(listener, app).await.unwrap();
+    axum::Server::bind(&SocketAddr::new(
+        IpAddr::V4(Ipv4Addr::new(127, 0, 0, 1)),
+        port,
+    ))
+    .serve(app.into_make_service())
+    .await
+    .unwrap();
+    info!("Server launch on http://localhost:{:?}", port);
 }
-
-// #[derive(Template)]
-// #[template(path = "pages/home.html")]
-// struct HomeTemplate {
-//     modules: Vec<Module>,
-//     is_ok: bool,
-// }
-
-// async fn home(State(state): State<Arc<EnvVars>>) -> HomeTemplate {
-//     let res = reqwest::Client::new()
-//         .get(state.api_endpoint.clone() + "/items/module?fields=*,pictures.directus_files_id")
-//         .header("Authorization", state.api_key.clone())
-//         .send()
-//         .await;
-//
-//     match res {
-//         Err(_) => HomeTemplate {
-//             modules: vec![],
-//             is_ok: false,
-//         },
-//         Ok(r) => match r.json::<ApiResponse>().await {
-//             Err(_) => HomeTemplate {
-//                 modules: vec![],
-//                 is_ok: false,
-//             },
-//             Ok(json) => HomeTemplate {
-//                 modules: json.data,
-//                 is_ok: true,
-//             },
-//         },
-//     }
-// }

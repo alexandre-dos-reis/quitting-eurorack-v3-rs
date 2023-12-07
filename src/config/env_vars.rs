@@ -14,11 +14,11 @@ pub enum AppEnv {
 pub struct EnvVars {
     pub api_endpoint: String,
     pub api_key: String,
-    pub port: usize,
+    pub port: u16,
     pub app_env: AppEnv,
 }
 
-const DEFAULT_PORT: usize = 3000;
+const DEFAULT_PORT: u16 = 3000;
 const API_ENDPOINT_VAR: &str = "API_ENDPOINT";
 
 // TODO: make en vars a global object: see lazy static
@@ -26,8 +26,8 @@ pub fn load_env_vars() -> EnvVars {
     let app_env =
         AppEnv::from_str(&env::var("ENV").unwrap_or(String::from("Dev"))).unwrap_or(AppEnv::Dev);
 
-    let port: usize = match env::var("PORT") {
-        Ok(val) => val.parse::<usize>().unwrap_or(DEFAULT_PORT),
+    let port: u16 = match env::var("PORT") {
+        Ok(val) => val.parse::<u16>().unwrap_or(DEFAULT_PORT),
         Err(_) => DEFAULT_PORT,
     };
 
