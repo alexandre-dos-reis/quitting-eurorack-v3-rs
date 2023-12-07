@@ -18,12 +18,11 @@ async fn main() {
 
     let env_var = load_env_vars();
     let port = env_var.app_port;
-    let shared_state = Arc::new(env_var);
 
     let router = Router::new()
         .route("/", get(home_handler))
         .nest_service("/assets", get_service(ServeDir::new("./src/assets/dist")))
-        .with_state(shared_state);
+        .with_state(Arc::new(env_var));
 
     let server = axum::Server::bind(&SocketAddr::new(
         IpAddr::V4(Ipv4Addr::new(127, 0, 0, 1)),
