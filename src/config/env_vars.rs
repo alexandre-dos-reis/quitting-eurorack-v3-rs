@@ -12,10 +12,10 @@ pub enum AppEnv {
 
 #[derive(Debug, Clone)]
 pub struct EnvVars {
+    pub app_env: AppEnv,
+    pub app_port: u16,
     pub api_endpoint: String,
     pub api_key: String,
-    pub port: u16,
-    pub app_env: AppEnv,
 }
 
 const DEFAULT_PORT: u16 = 3000;
@@ -33,7 +33,7 @@ pub fn load_env_vars() -> EnvVars {
 
     match app_env {
         AppEnv::Prod => EnvVars {
-            port,
+            app_port: port,
             app_env,
             api_key: env::var("API_KEY").expect("API KEY is mandatory !"),
             api_endpoint: env::var(API_ENDPOINT_VAR)
@@ -45,14 +45,14 @@ pub fn load_env_vars() -> EnvVars {
             }
             dotenv().expect(".env file not found !");
             EnvVars {
-                port,
+                app_port: port,
                 app_env,
                 api_key: env::var("API_KEY").expect("dotenv didn't work !"),
                 api_endpoint: env::var(API_ENDPOINT_VAR).expect("dotenv didn't work !"),
             }
         }
         AppEnv::Ci => EnvVars {
-            port,
+            app_port: port,
             app_env,
             api_key: env::var("API_KEY").expect("API KEY is mandatory !"),
             api_endpoint: env::var(API_ENDPOINT_VAR)

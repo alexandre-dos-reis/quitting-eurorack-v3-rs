@@ -8,12 +8,11 @@
   class="grid xs:grid-cols-1 sm:grid-cols-2 md:grid-cols-1 gap-5 px-5 mb-24"
 >
   {% for m in modules %}
-  <Couple>
-    <Tag bgColor="bg-blue-500">Manufacturer</Tag>
-    <El>{m.manufacturer}</El>
-  </Couple>
   <article key="{m.id}" class="border border-gray-600 p-5 rounded-lg">
-    <section class="grid grid-cols-1 md:grid-cols-7 gap-4">{{ m.name}}</section>
+    <section class="grid grid-cols-1 md:grid-cols-7 gap-4">
+      {% let title = "manufacturer" %} {% content = m.manufacturer %} {% let
+      bg_color = "bg-blue-500" %} {% include "partials/tag.html" %}
+    </section>
   </article>
   {% endfor %}
 </main>
