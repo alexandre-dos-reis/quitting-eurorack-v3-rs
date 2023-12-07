@@ -1,5 +1,5 @@
 use crate::config::env_vars::load_env_vars;
-use api::types::ApiResponse;
+use api::types::{ApiResponse, Module};
 use axum::{extract::State, routing::get, Router};
 use config::env_vars::EnvVars;
 use log::info;
@@ -24,7 +24,7 @@ async fn home_handler(State(state): State<Arc<EnvVars>>) -> Markup {
 
     match res {
         Err(_) => error_page(),
-        Ok(r) => match r.json::<ApiResponse>().await {
+        Ok(r) => match r.json::<ApiResponse<Module>>().await {
             Err(_) => error_page(),
             Ok(json) => home_page(json.data),
         },
@@ -40,17 +40,18 @@ async fn main() {
     let port = env_var.port;
     let shared_state = Arc::new(env_var);
 
-    let app = Router::new()
+    let router = Router::new()
         .route("/", get(home_handler))
         // .nest_service("/assets", get_service(ServeDir::new("./src/assets/dist")))
         .with_state(shared_state);
 
-    axum::Server::bind(&SocketAddr::new(
+    let server = axum::Server::bind(&SocketAddr::new(
         IpAddr::V4(Ipv4Addr::new(127, 0, 0, 1)),
         port,
     ))
-    .serve(app.into_make_service())
-    .await
-    .unwrap();
+    .serve(router.into_make_service());
+
     info!("Server launch on http://localhost:{:?}", port);
+
+    server.await.unwrap();
 }
