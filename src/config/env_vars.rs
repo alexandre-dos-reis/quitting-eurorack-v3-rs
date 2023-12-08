@@ -16,6 +16,7 @@ pub struct EnvVars {
     pub app_port: u16,
     pub api_endpoint: String,
     pub api_key: String,
+    pub contact_email: String,
 }
 
 const DEFAULT_PORT: u16 = 3000;
@@ -35,6 +36,7 @@ pub fn load_env_vars() -> EnvVars {
         AppEnv::Prod => EnvVars {
             app_port: port,
             app_env,
+            contact_email: env::var("CONTACT_EMAIL").expect("CONTACT_EMAIL is mandatory !"),
             api_key: env::var("API_KEY").expect("API KEY is mandatory !"),
             api_endpoint: env::var(API_ENDPOINT_VAR)
                 .expect("API_ENDPOINT need to be set in a production environment !"),
@@ -47,6 +49,7 @@ pub fn load_env_vars() -> EnvVars {
             EnvVars {
                 app_port: port,
                 app_env,
+                contact_email: env::var("CONTACT_EMAIL").expect("CONTACT_EMAIL is mandatory !"),
                 api_key: env::var("API_KEY").expect("dotenv didn't work !"),
                 api_endpoint: env::var(API_ENDPOINT_VAR).expect("dotenv didn't work !"),
             }
@@ -54,6 +57,7 @@ pub fn load_env_vars() -> EnvVars {
         AppEnv::Ci => EnvVars {
             app_port: port,
             app_env,
+            contact_email: env::var("CONTACT_EMAIL").expect("CONTACT_EMAIL is mandatory !"),
             api_key: env::var("API_KEY").expect("API KEY is mandatory !"),
             api_endpoint: env::var(API_ENDPOINT_VAR)
                 .expect("API_ENDPOINT need to be set in a CI environment !"),
