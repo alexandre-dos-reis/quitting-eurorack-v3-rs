@@ -9,8 +9,10 @@ use axum::extract::State;
 use maud::Markup;
 
 pub async fn home_handler(State(state): State<Arc<EnvVars>>) -> Markup {
+    let api_endpoint = &state.api_endpoint;
+
     let res = reqwest::Client::new()
-        .get(state.api_endpoint.clone() + "/items/module?fields=*,pictures.directus_files_id")
+        .get(api_endpoint.to_owned() + "/items/module?fields=*,pictures.directus_files_id")
         .header("Authorization", state.api_key.clone())
         .send()
         .await;
@@ -19,7 +21,7 @@ pub async fn home_handler(State(state): State<Arc<EnvVars>>) -> Markup {
         Err(_) => error_page(),
         Ok(r) => match r.json::<ApiResponse<Module>>().await {
             Err(_) => error_page(),
-            Ok(json) => home_page(json.data),
+            Ok(json) => home_page(json.data, &(api_endpoint.to_owned() + "/assets")),
         },
     }
 }

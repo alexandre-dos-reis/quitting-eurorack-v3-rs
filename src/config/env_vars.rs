@@ -20,7 +20,6 @@ pub struct EnvVars {
 }
 
 const DEFAULT_PORT: u16 = 3000;
-const API_ENDPOINT_VAR: &str = "API_ENDPOINT";
 
 // TODO: make en vars a global object: see lazy static
 pub fn load_env_vars() -> EnvVars {
@@ -33,17 +32,17 @@ pub fn load_env_vars() -> EnvVars {
     };
 
     match app_env {
-        AppEnv::Prod => EnvVars {
+        AppEnv::Prod | AppEnv::Ci => EnvVars {
             app_port: port,
             app_env,
             contact_email: env::var("CONTACT_EMAIL").expect("CONTACT_EMAIL is mandatory !"),
             api_key: env::var("API_KEY").expect("API KEY is mandatory !"),
-            api_endpoint: env::var(API_ENDPOINT_VAR)
+            api_endpoint: env::var("API_ENDPOINT")
                 .expect("API_ENDPOINT need to be set in a production environment !"),
         },
         AppEnv::Dev => {
-            if env::var(API_ENDPOINT_VAR).is_ok() || env::var("api_key").is_ok() {
-                panic!("Env variables must be provided via the .env file !")
+            if env::var("API_ENDPOINT").is_ok() || env::var("API_KEY").is_ok() {
+                panic!("Env vars must be provided via the .env file !")
             }
             dotenv().expect(".env file not found !");
             EnvVars {
@@ -51,16 +50,8 @@ pub fn load_env_vars() -> EnvVars {
                 app_env,
                 contact_email: env::var("CONTACT_EMAIL").expect("CONTACT_EMAIL is mandatory !"),
                 api_key: env::var("API_KEY").expect("dotenv didn't work !"),
-                api_endpoint: env::var(API_ENDPOINT_VAR).expect("dotenv didn't work !"),
+                api_endpoint: env::var("API_ENDPOINT").expect("dotenv didn't work !"),
             }
         }
-        AppEnv::Ci => EnvVars {
-            app_port: port,
-            app_env,
-            contact_email: env::var("CONTACT_EMAIL").expect("CONTACT_EMAIL is mandatory !"),
-            api_key: env::var("API_KEY").expect("API KEY is mandatory !"),
-            api_endpoint: env::var(API_ENDPOINT_VAR)
-                .expect("API_ENDPOINT need to be set in a CI environment !"),
-        },
     }
 }
