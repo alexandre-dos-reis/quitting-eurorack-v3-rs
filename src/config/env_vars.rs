@@ -8,6 +8,7 @@ pub enum AppEnv {
     Dev,
     Prod,
     Ci,
+    Test,
 }
 
 #[derive(Debug, Clone)]
@@ -32,7 +33,7 @@ pub fn load_env_vars() -> EnvVars {
     };
 
     match app_env {
-        AppEnv::Prod | AppEnv::Ci => EnvVars {
+        AppEnv::Test | AppEnv::Prod | AppEnv::Ci => EnvVars {
             app_port: port,
             app_env,
             contact_email: env::var("CONTACT_EMAIL").expect("CONTACT_EMAIL is mandatory !"),
