@@ -8,10 +8,9 @@ pub fn pictures(m: &Module, asset_endpoint: &String) -> Markup {
             div class="flex flex-wrap justify-center items-center gap-5 mt-9 md:mt-5" {
                 @for p in &m.pictures {
                             img
-                                class="w-20 h-20 object-cover rounded-md hover:opacity-50 transition-opacity"
+                                class="w-20 h-20 object-cover rounded-md hover:opacity-50 transition-opacity cursor-pointer"
                                 src={(asset_endpoint)"/"(p.directus_files_id)"?fit=cover&width=80&height=80&quality=80"}
-                                _={"on click toggle .hidden on #modal then set @src to '"(asset_endpoint)"/"(p.directus_files_id)"' on #modal-img"}
-                                ;
+                                _={"on click add @src='"(asset_endpoint)"/"(p.directus_files_id)"' to #modal-img then toggle .hidden on #modal"};
                     }
                 }
         }
