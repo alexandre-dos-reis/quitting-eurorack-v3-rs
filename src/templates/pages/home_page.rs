@@ -27,7 +27,7 @@ pub fn home_page(modules: Vec<Module>, asset_endpoint: &String) -> Markup {
                         (tag("Name", &m.name, "bg-yellow-500"))
                         (tag("Condition", &m.condition, "bg-pink-500"))
                         (tag("Box included", if m.box_included {"Yes"} else {"No"}, "bg-green-500"))
-                        (tag("Price", m.price.to_string().as_str(), "bg-orange-500"))
+                        (tag("Price", &(m.price.to_string() + " €"), "bg-orange-500"))
                         (tag("Rack rash", if m.rack_rash {"Yes"} else {"No"}, "bg-purple-500"))
                         div class="grid grid-cols-2 justify-center items-center gap-x-5 md:block" {
                             div class="rounded-xl text-end md:text-center text-gray-800 md:mb-3" {
@@ -46,11 +46,6 @@ pub fn home_page(modules: Vec<Module>, asset_endpoint: &String) -> Markup {
         }
         div
             id="modal" class="hidden fixed z-50 inset-10 cursor-pointer"
-            _="on click toggle .hidden on me" {
-            img
-                class="object-contain h-full w-full rounded-lg"
-                src="https://office.alexandre-dosreis.me/assets/820d6f3f-0ff8-4fe8-b382-262f96301752"
-            ;
-        }
+            _="on click toggle .hidden on me" {}
     })
 }
