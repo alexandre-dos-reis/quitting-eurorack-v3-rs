@@ -45,10 +45,9 @@ pub fn home_page(modules: Vec<Module>, asset_endpoint: &String) -> Markup {
             }
         }
         div
-            id="modal" class="fixed hidden z-50 inset-10"
+            id="modal" class="hidden fixed z-50 inset-10 cursor-pointer"
             _="on click toggle .hidden on me" {
             img
-                id="modal-img"
                 class="object-contain h-full w-full rounded-lg"
                 src="https://office.alexandre-dosreis.me/assets/820d6f3f-0ff8-4fe8-b382-262f96301752"
             ;
