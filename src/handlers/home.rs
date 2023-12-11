@@ -1,19 +1,14 @@
-use std::sync::Arc;
-
 use crate::{
     api::types::{ApiResponse, Module},
-    config::env_vars::EnvVars,
+    config::env_vars::ENV_VARS,
     templates::pages::{error_page::error_page, home_page::home_page},
 };
-use axum::extract::State;
 use maud::Markup;
 
-pub async fn home_handler(State(state): State<Arc<EnvVars>>) -> Markup {
-    let api_endpoint = &state.api_endpoint;
-
+pub async fn home_handler() -> Markup {
     let res = reqwest::Client::new()
-        .get(api_endpoint.to_owned() + "/items/module?fields=*,pictures.directus_files_id")
-        .header("Authorization", state.api_key.clone())
+        .get(ENV_VARS.api_endpoint.to_owned() + "/items/module?fields=*,pictures.directus_files_id")
+        .header("Authorization", &ENV_VARS.api_key)
         .send()
         .await;
 
@@ -21,7 +16,7 @@ pub async fn home_handler(State(state): State<Arc<EnvVars>>) -> Markup {
         Err(_) => error_page(),
         Ok(r) => match r.json::<ApiResponse<Module>>().await {
             Err(_) => error_page(),
-            Ok(json) => home_page(json.data, &(api_endpoint.to_owned() + "/assets")),
+            Ok(json) => home_page(json.data),
         },
     }
 }

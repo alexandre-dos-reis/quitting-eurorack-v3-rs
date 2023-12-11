@@ -741,6 +741,7 @@ dependencies = [
  "axum",
  "dotenvy",
  "env_logger",
+ "lazy_static",
  "log",
  "maud",
  "reqwest",

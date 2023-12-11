@@ -1,6 +1,11 @@
 use dotenvy::dotenv;
+use lazy_static::lazy_static;
 use std::{env, str::FromStr};
 use strum_macros::EnumString;
+
+lazy_static! {
+    pub static ref ENV_VARS: EnvVars = load_env_vars();
+}
 
 #[derive(Debug, Clone, Copy, EnumString)]
 #[strum(ascii_case_insensitive)]
@@ -23,7 +28,7 @@ pub struct EnvVars {
 const DEFAULT_PORT: u16 = 3000;
 
 // TODO: make en vars a global object: see lazy static
-pub fn load_env_vars() -> EnvVars {
+fn load_env_vars() -> EnvVars {
     let app_env =
         AppEnv::from_str(&env::var("ENV").unwrap_or(String::from("Dev"))).unwrap_or(AppEnv::Dev);
 

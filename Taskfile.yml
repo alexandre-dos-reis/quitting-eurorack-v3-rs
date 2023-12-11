@@ -8,14 +8,20 @@ vars:
 
 tasks:
   dev:
-    deps: [cargo:dev, tw:watch]
+    deps: [cargo:dev, tw:dev]
 
   cargo:dev:
-    # prefix: "Rust"
     cmds:
       - RUST_LOG=info cargo watch -w src -x run
 
-  tw:watch:
-    # prefix: "Tailwind"
+  cargo:build:
+    cmds:
+      - cargo build --release
+
+  tw:dev:
     cmds:
       - bunx tailwindcss -i {{.ASSETS_DIR}}/src/{{.ASSETS_FILE}} -o {{.ASSETS_DIR}}/dist/{{.ASSETS_FILE}} --watch
+
+  tw:build:
+    cmds:
+      - bunx tailwindcss -i {{.ASSETS_DIR}}/src/{{.ASSETS_FILE}} -o {{.ASSETS_DIR}}/dist/{{.ASSETS_FILE}} --minify

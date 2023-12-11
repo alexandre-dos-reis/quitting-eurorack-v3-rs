@@ -8,7 +8,7 @@ use crate::{
     },
 };
 
-pub fn home_page(modules: Vec<Module>, asset_endpoint: &String) -> Markup {
+pub fn home_page(modules: Vec<Module>) -> Markup {
     page(html! {
         h1 class="text-center text-4xl mt-5 mb-5" {
             "👋 Hello, I'm quitting Eurorack. 😭"
@@ -40,7 +40,7 @@ pub fn home_page(modules: Vec<Module>, asset_endpoint: &String) -> Markup {
                             }
                         }
                     }
-                    (pictures(m, asset_endpoint))
+                    (pictures(m))
                 }
             }
         }
