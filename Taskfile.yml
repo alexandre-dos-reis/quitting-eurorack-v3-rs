@@ -3,8 +3,9 @@ version: "3"
 silent: true
 # output: prefixed
 vars:
-  ASSETS_DIR: ./src/assets
   ASSETS_FILE: styles.css
+  ASSETS_INPUT_FILE: "./src/assets/{{.ASSETS_FILE}}"
+  ASSETS_OUTPUT_FILE: "./public/{{.ASSETS_FILE}}"
 
 tasks:
   dev:
@@ -20,8 +21,8 @@ tasks:
 
   tw:dev:
     cmds:
-      - bunx tailwindcss -i {{.ASSETS_DIR}}/src/{{.ASSETS_FILE}} -o {{.ASSETS_DIR}}/dist/{{.ASSETS_FILE}} --watch
+      - bunx tailwindcss -i {{.ASSETS_INPUT_FILE}} -o {{.ASSETS_OUTPUT_FILE}} --watch
 
   tw:build:
     cmds:
-      - bunx tailwindcss -i {{.ASSETS_DIR}}/src/{{.ASSETS_FILE}} -o {{.ASSETS_DIR}}/dist/{{.ASSETS_FILE}} --minify
+      - bunx tailwindcss -i {{.ASSETS_INPUT_FILE}} -o {{.ASSETS_OUTPUT_FILE}} --minify

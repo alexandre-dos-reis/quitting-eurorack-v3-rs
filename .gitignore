@@ -20,7 +20,8 @@ target/
 .env
 
 # ignore build assets
-src/assets/dist/
+public/*
+!.gitkeep
 
 # ignore bun modules
 node_modules

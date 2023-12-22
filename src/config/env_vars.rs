@@ -14,7 +14,7 @@ pub enum AppEnv {
     Test,
 }
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, PartialEq)]
 pub struct EnvVars {
     pub app_env: AppEnv,
     pub app_port: u16,
@@ -25,7 +25,7 @@ pub struct EnvVars {
 
 lazy_static! {
     pub static ref ENV_VARS: EnvVars = {
-        let app_env = AppEnv::from_str(&env::var("ENV").unwrap_or(String::from("Dev")))
+        let app_env = AppEnv::from_str(&env::var("APP_ENV").unwrap_or(String::from("Dev")))
             .unwrap_or(AppEnv::Dev);
 
         let port: u16 = match env::var("PORT") {
