@@ -6,7 +6,7 @@ RUN cargo build --release
 FROM oven/bun:1 as build-assets
 WORKDIR /app
 COPY . /app
-COPY package.json bun.lockb .
+COPY package.json bun.lockb ./
 RUN bun install 
 RUN bunx tailwindcss -i src/assets/styles.css -o public/styles.css --minify
 
