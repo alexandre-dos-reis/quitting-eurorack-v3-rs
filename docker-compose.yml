@@ -6,6 +6,8 @@ services:
   quitting-eurorack:
     build: .
     image: quitting-eurorack
+    networks:
+      - caddy
     labels:
       caddy: ${DOMAIN_NAME}
       caddy.reverse_proxy: "{{upstreams 3000}}"
