@@ -2,13 +2,13 @@ kind: pipeline
 type: ssh
 name: Deploy
 
-# server:
-#   host:
-#     from_secret: API_ENDPOINT
-#   user:
-#     from_secret: API_KEY
-#   password:
-#     from_secret: CONTACT_EMAIL
+server:
+  host:
+    from_secret: API_ENDPOINT
+  user:
+    from_secret: API_KEY
+  password:
+    from_secret: PASSWORD
 
 steps:
   - name: Deploy via docker
