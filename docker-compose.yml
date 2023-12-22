@@ -1,6 +1,4 @@
-networks:
-  caddy:
-    external: true
+version: "3"
 
 services:
   quitting-eurorack:
@@ -16,3 +14,7 @@ services:
       API_ENDPOINT: ${API_ENDPOINT}
       API_KEY: ${API_KEY}
       CONTACT_EMAIL: ${CONTACT_EMAIL}
+
+networks:
+  caddy:
+    external: true
