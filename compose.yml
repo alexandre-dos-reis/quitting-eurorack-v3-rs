@@ -1,0 +1,16 @@
+networks:
+  caddy:
+    external: true
+
+services:
+  quitting-eurorack:
+    build: .
+    image: quitting-eurorack
+    labels:
+      caddy: ${DOMAIN_NAME}
+      caddy.reverse_proxy: "{{upstreams 3000}}"
+    environment:
+      APP_ENV: Prod
+      API_ENDPOINT: ${API_ENDPOINT}
+      API_KEY: ${API_KEY}
+      CONTACT_EMAIL: ${CONTACT_EMAIL}
