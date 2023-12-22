@@ -4,9 +4,9 @@ name: Deploy
 
 server:
   host:
-    from_secret: API_ENDPOINT
+    from_secret: HOST_ADDR
   user:
-    from_secret: API_KEY
+    from_secret: USER
   password:
     from_secret: PASSWORD
 
