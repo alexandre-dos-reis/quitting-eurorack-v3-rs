@@ -11,6 +11,7 @@ RUN bun install
 RUN bunx tailwindcss -i src/assets/styles.css -o public/styles.css --minify
 
 FROM gcr.io/distroless/cc
+LABEL org.opencontainers.image.source=https://github.com/alexandre-dos-reis/quitting-eurorack-v3-rs
 COPY --from=build-app /app/target/release/quitting-eurorack-v3-rs /
 COPY --from=build-assets /app/public /public
 CMD ["./quitting-eurorack-v3-rs"]
